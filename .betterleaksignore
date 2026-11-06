@@ -1,0 +1,8 @@
+# ==============================================================================
+# Betterleaks Ignore Baseline
+# ==============================================================================
+# Use this file to suppress known false positives or legacy accepted findings.
+# Format: Add unique finding fingerprints (one per line).
+# Example:
+# 3b1a8d4c9e2f...
+

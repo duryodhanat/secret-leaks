@@ -1,0 +1,17 @@
+# ==============================================================================
+# Pre-Commit Configuration for Secret Scanning
+# Framework Docs: https://pre-commit.com
+# Betterleaks Repo: https://github.com/betterleaks/betterleaks
+# ==============================================================================
+
+default_install_hook_types: [pre-commit]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v2.0.0
+    hooks:
+      - id: betterleaks
+        name: Betterleaks Secret Scanner
+        description: Scans staged changes for credentials, tokens, and private keys before commit
+        args: ["--config", ".betterleaks.toml", "-v"]

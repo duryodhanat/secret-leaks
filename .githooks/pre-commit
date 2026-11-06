@@ -1,0 +1,51 @@
+#!/bin/sh
+# ==============================================================================
+# Betterleaks Pre-Commit Hook (Native Git Hook)
+# Tracks in repository: .githooks/pre-commit
+# Activate via: git config core.hooksPath .githooks
+# ==============================================================================
+
+echo "🔍 [Betterleaks] Scanning staged changes for exposed secrets..."
+
+# 1. Verify if betterleaks CLI is installed
+if ! command -v betterleaks >/dev/null 2>&1; then
+    echo "⚠️  [Betterleaks] 'betterleaks' CLI is not found in your PATH."
+    echo "   Please install Betterleaks to ensure secret scanning runs locally:"
+    echo "     - macOS:  brew install betterleaks"
+    echo "     - Linux:  curl -sSfL https://github.com/betterleaks/betterleaks/releases/latest/download/... | tar -xz"
+    echo "     - Windows: scoop install betterleaks OR download binary from GitHub Releases"
+    echo "   See docs/SECRET_SCANNING_DEVELOPER_GUIDE.md for detailed steps."
+    echo ""
+    echo "❌ Commit rejected to protect against secret leakage."
+    echo "   (To bypass only in an emergency: git commit --no-verify)"
+    exit 1
+fi
+
+# 2. Run Betterleaks against staged changes with verbose flag (-v)
+# The -v flag displays the exact file path, line number, rule ID, and snippet.
+CONFIG_FLAG=""
+if [ -f ".betterleaks.toml" ]; then
+    CONFIG_FLAG="--config .betterleaks.toml"
+fi
+
+betterleaks git . --staged -v $CONFIG_FLAG
+EXIT_CODE=$?
+
+# 3. Evaluate results
+if [ $EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "❌ [Betterleaks] Potential secret(s) detected in staged changes!"
+    echo "🛑 Commit has been aborted to prevent secrets from entering Git history."
+    echo ""
+    echo "💡 What to do next:"
+    echo "   1. Review the file path(s) and line number(s) reported above."
+    echo "   2. Remove or redact the secret from your staged files."
+    echo "   3. If it is a confirmed false positive, add '# betterleaks:allow' on that line"
+    echo "      or add the fingerprint to .betterleaksignore"
+    echo "   4. Restage your files ('git add <file>') and commit again."
+    echo ""
+    exit 1
+fi
+
+echo "✅ [Betterleaks] No secrets detected. Proceeding with commit."
+exit 0

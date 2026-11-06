@@ -1,0 +1,50 @@
+# ==============================================================================
+# Betterleaks Secret Scanning Configuration
+# Documentation: https://github.com/betterleaks/betterleaks
+# ==============================================================================
+
+title = "Betterleaks Secret Scanning Configuration"
+
+[extend]
+# Inherit all default built-in rules (API keys, tokens, private keys, AWS, etc.)
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for harmless files, dependencies, build artifacts, and test mocks"
+
+# Paths to exclude from secret scanning
+paths = [
+    '''node_modules/''',
+    '''\.git/''',
+    '''\.venv/''',
+    '''env/''',
+    '''venv/''',
+    '''__pycache__/''',
+    '''dist/''',
+    '''build/''',
+    '''\.mypy_cache/''',
+    '''\.ruff_cache/''',
+    '''package-lock\.json$''',
+    '''yarn\.lock$''',
+    '''pnpm-lock\.yaml$''',
+    '''poetry\.lock$''',
+    '''Cargo\.lock$''',
+    '''go\.sum$'''
+]
+
+# Regex patterns to ignore (common fake tokens, test fixtures, documentation examples)
+regexes = [
+    '''(?i)example[_-]?secret''',
+    '''(?i)dummy[_-]?token''',
+    '''(?i)test[_-]?api[_-]?key''',
+    '''AKIAIOSFODNN7EXAMPLE''',       # Standard AWS documentation mock ID
+    '''wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY''' # Standard AWS documentation mock secret
+]
+
+# Stopwords to filter out intentional placeholder values
+stopwords = [
+    "EXAMPLE",
+    "PLACEHOLDER",
+    "YOUR_API_KEY_HERE",
+    "DUMMY_VALUE"
+]
